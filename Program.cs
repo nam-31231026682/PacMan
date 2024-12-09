@@ -121,21 +121,21 @@ int OriginalWindowHeight = Console.WindowHeight;
 ConsoleColor OriginalBackgroundColor = Console.BackgroundColor;
 ConsoleColor OriginalForegroundColor = Console.ForegroundColor;
 
-char[,] Dots;
-int Score;
-(int X, int Y) PacManPosition;
+char[,] Dots; //2d array fro dots
+int Score; //store point
+(int X, int Y) PacManPosition; //tuple of int X, Y
 Direction? PacManMovingDirection = default;
 int? PacManMovingFrame = default;
 const int FramesToMoveHorizontal = 6;
 const int FramesToMoveVertical = 6;
-Ghost[] Ghosts;
+Ghost[] Ghosts; //tạo mảng 
 const int GhostWeakTime = 200;
 (int X, int Y)[] Locations = GetLocations();
 
-Console.Clear();
+Console.Clear(); //xóa màn hình Console
 try
 {
-	if (OperatingSystem.IsWindows())
+	if (OperatingSystem.IsWindows()) 
 	{
 		Console.WindowWidth = 50;
 		Console.WindowHeight = 30;
@@ -146,7 +146,7 @@ try
 	Score = 0;
 NextRound:
 	Console.Clear();
-	SetUpDots();
+	SetUpDots(); //Gọi hàm để tạo .
 	PacManPosition = (20, 17);
 
 	Ghost a = new();
@@ -177,11 +177,11 @@ NextRound:
 
 	Ghosts = [a, b, c, d,];
 
-	RenderWalls();
-	RenderGate();
-	RenderDots();
-	RenderReady();
-	RenderPacMan();
+	RenderWalls(); //vẽ tường
+	RenderGate(); //vẽ cổng
+    RenderDots();
+	RenderReady(); //hiện màn hình ready
+    RenderPacMan();
 	RenderGhosts();
 	RenderScore();
 	if (GetStartingDirectionInput())
@@ -190,13 +190,13 @@ NextRound:
 	}
 	PacManMovingFrame = 0;
 	EraseReady();
-	while (CountDots() > 0)
+	while (CountDots() > 0) //tiếp tục chạy khi . > 0
 	{
 		if (HandleInput())
 		{
 			return; // user hit escape
 		}
-		UpdatePacMan();
+		UpdatePacMan(); //cập nhật trạng thái 
 		UpdateGhosts();
 		RenderScore();
 		RenderDots();
@@ -206,7 +206,7 @@ NextRound:
 		{
 			if (ghost.Position == PacManPosition)
 			{
-				if (ghost.Weak)
+				if (ghost.Weak) //nếu Ghost đang Weak thì
 				{
 					ghost.Position = ghost.StartPosition;
 					ghost.Weak = false;
@@ -218,7 +218,7 @@ NextRound:
 					Console.WriteLine("Game Over!");
 					Console.WriteLine("Play Again [enter], or quit [escape]?");
 				GetInput:
-					switch (Console.ReadKey(true).Key)
+					switch (Console.ReadKey(true).Key) //chọn giữa 2 input
 					{
 						case ConsoleKey.Enter: goto NextRound;
 						case ConsoleKey.Escape: Console.Clear(); return;
@@ -227,11 +227,11 @@ NextRound:
 				}
 			}
 		}
-		Thread.Sleep(TimeSpan.FromMilliseconds(40));
+		Thread.Sleep(TimeSpan.FromMilliseconds(40)); //ngắt 40ms giữa các loop
 	}
 	goto NextRound;
 }
-finally
+finally //luôn execute bất kể ở trên trả lại gì
 {
 	Console.CursorVisible = true;
 	if (OperatingSystem.IsWindows())
@@ -245,35 +245,36 @@ finally
 
 	bool GetStartingDirectionInput()
 	{
-	GetInput:
-		ConsoleKey key = Console.ReadKey(true).Key;
-		switch (key)
+	GetInput: //chờ input từ người chơi rồi mới bắt đầu
+		ConsoleKey key = Console.ReadKey(true).Key; //đọc user input và xử lí 
+		switch (key) //xử lí
 		{
 			case ConsoleKey.LeftArrow: PacManMovingDirection = Direction.Left; break;
 			case ConsoleKey.RightArrow: PacManMovingDirection = Direction.Right; break;
 			case ConsoleKey.Escape: Console.Clear(); Console.Write("PacMan was closed."); return true;
-			default: goto GetInput;
+			default: goto GetInput; //user input không hợp lệ thì quay lại chờ input khác
 		}
-		return false;
+		return false; //khi user ấn escape
 	}
 
-	bool HandleInput()
+	bool HandleInput()  //trả về true nếu nhấn phím Escape.
+						//Trả về false nếu không có phím yêu cầu thoát trò chơi nào được nhấn.
 	{
 		bool moved = false;
 		void TrySetPacManDirection(Direction direction)
 		{
-			if (!moved &&
-				PacManMovingDirection != direction &&
-				CanMove(PacManPosition.X, PacManPosition.Y, direction))
+			if (!moved && //PM chưa di chuyển
+				PacManMovingDirection != direction && //hướng mới phải # hướng đang di chuyển
+				CanMove(PacManPosition.X, PacManPosition.Y, direction)) //check đường đi có avai ko
 			{
-				PacManMovingDirection = direction;
-				PacManMovingFrame = 0;
+				PacManMovingDirection = direction; //update hướng di chuyển 
+				PacManMovingFrame = 0; //reset khung hình
 				moved = true;
 			}
 		}
-		while (Console.KeyAvailable)
+		while (Console.KeyAvailable) //check input
 		{
-			switch (Console.ReadKey(true).Key)
+			switch (Console.ReadKey(true).Key) //read input và xử lí phím
 			{
 				case ConsoleKey.UpArrow: TrySetPacManDirection(Direction.Up); break;
 				case ConsoleKey.DownArrow: TrySetPacManDirection(Direction.Down); break;
@@ -281,40 +282,42 @@ finally
 				case ConsoleKey.RightArrow: TrySetPacManDirection(Direction.Right); break;
 				case ConsoleKey.Escape:
 					Console.Clear();
-					Console.Write("PPacMan was closed.");
+					Console.Write("Ban da an Escape. Thoat tro choi!");
+					Console.ReadKey();
 					return true;
 			}
 		}
 		return false;
 	}
 
+//x là cột, y là hàng
 	char BoardAt(int x, int y) => WallsString[y * 42 + x];
 
 	bool IsWall(int x, int y) => BoardAt(x, y) is not ' ';
 
 	bool CanMove(int x, int y, Direction direction) => direction switch
 	{
-		Direction.Up =>
-			!IsWall(x - 1, y - 1) &&
-			!IsWall(x, y - 1) &&
-			!IsWall(x + 1, y - 1),
-		Direction.Down =>
-			!IsWall(x - 1, y + 1) &&
-			!IsWall(x, y + 1) &&
-			!IsWall(x + 1, y + 1),
-		Direction.Left =>
-			x - 2 < 0 || !IsWall(x - 2, y),
+		Direction.Up => //check 3 ô phía trên 
+			!IsWall(x - 1, y - 1) && //ô trên trái
+			!IsWall(x, y - 1) &&  //ô trên giữa
+            !IsWall(x + 1, y - 1), //ô trên phải
+        Direction.Down =>
+			!IsWall(x - 1, y + 1) && //ô dưới trái
+			!IsWall(x, y + 1) && //ô dưới giữa
+            !IsWall(x + 1, y + 1), //ô dưới phải
+        Direction.Left =>
+			x - 2 < 0 || !IsWall(x - 2, y), //0 là border trái của map
 		Direction.Right =>
-			x + 2 > 40 || !IsWall(x + 2, y),
-		_ => throw new NotImplementedException(),
+			x + 2 > 40 || !IsWall(x + 2, y), //40 là border phải của map
+        _ => throw new NotImplementedException(),
 	};
 
 	void SetUpDots()
 	{
-		string[] rows = DotsString.Split("\n");
+		string[] rows = DotsString.Split("\n"); //chia DotsString thành các hàng
 		int rowCount = rows.Length;
 		int columnCount = rows[0].Length;
-		Dots = new char[columnCount, rowCount];
+		Dots = new char[columnCount, rowCount]; //tạo ma trận Dots
 		for (int row = 0; row < rowCount; row++)
 		{
 			for (int column = 0; column < columnCount; column++)
@@ -349,7 +352,7 @@ finally
 			if ((PacManMovingDirection == Direction.Left || PacManMovingDirection == Direction.Right) && PacManMovingFrame >= FramesToMoveHorizontal ||
 				(PacManMovingDirection == Direction.Up || PacManMovingDirection == Direction.Down) && PacManMovingFrame >= FramesToMoveVertical)
 			{
-				PacManMovingFrame = 0;
+				PacManMovingFrame = 1; //tốc độ của PM
 				int x_adjust =
 					PacManMovingDirection == Direction.Left ? -1 :
 					PacManMovingDirection == Direction.Right ? 1 :
@@ -369,12 +372,12 @@ finally
 				{
 					PacManPosition.X = 0;
 				}
-				if (Dots[PacManPosition.X, PacManPosition.Y] is '·')
+				if (Dots[PacManPosition.X, PacManPosition.Y] is '·') //ăn . thì
 				{
 					Dots[PacManPosition.X, PacManPosition.Y] = ' ';
 					Score += 1;
 				}
-				if (Dots[PacManPosition.X, PacManPosition.Y] is '+')
+				if (Dots[PacManPosition.X, PacManPosition.Y] is '+') //ăn + thì
 				{
 					foreach (Ghost ghost in Ghosts)
 					{
@@ -624,18 +627,18 @@ class Ghost
 {
 	public (int X, int Y) StartPosition;
 	public (int X, int Y) Position;
-	public bool Weak;
-	public int WeakTime;
-	public ConsoleColor Color;
-	public Action? Update;
+	public bool Weak;   //bool indicates when the ghost is in a weak state
+    public int WeakTime; //counting down the time ghost remain weak
+	public ConsoleColor Color;   //color of ghost
+	public Action? Update;  //updating the ghost state and location
 	public int UpdateFrame;
-	public int FramesToUpdate;
+	public int FramesToUpdate; //control the ghost's speed
 	public (int X, int Y)? Destination;
 }
 
 enum Direction
-{
-	Up = 0,
+{ //determine how how PacMan update its position based on user's input
+    Up = 0,
 	Down = 1,
 	Left = 2,
 	Right = 3,
