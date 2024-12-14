@@ -1,5 +1,4 @@
 ﻿using NAudio.Wave;
-using NAudio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Towel;
 using static Towel.Statics;
+using System.Diagnostics;
 
 
 
@@ -133,10 +133,6 @@ internal class Program
         int OriginalWindowHeight = Console.WindowHeight;
         ConsoleColor OriginalBackgroundColor = Console.BackgroundColor;
         ConsoleColor OriginalForegroundColor = Console.ForegroundColor;
-        IWavePlayer? _eatingPlayer;
-        IWavePlayer? _backgroundPlayer;
-        Task? _backgroundMusicTask;
-        CancellationTokenSource? _cancellationTokenSource;
 
         void ShowLogo()
         {
@@ -145,7 +141,7 @@ internal class Program
             Console.SetCursorPosition(45, 5);
             Console.WriteLine("╔════════════════════════════════════╗");
             Console.SetCursorPosition(45, 6);
-            Console.WriteLine("║              Pac-Man  !            ║");
+            Console.WriteLine("║              PAC-MAN !             ║");
             Console.SetCursorPosition(45, 7);
             Console.WriteLine("╚════════════════════════════════════╝");
 
@@ -182,28 +178,77 @@ internal class Program
             Console.ReadKey(true);
             Console.Clear();
         }
+        
+
 
         void ShowMenu()
         {
             Console.Clear();
-            Console.SetCursorPosition(10, 5);
-            Console.Write("Enter your name: ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
+            // Hiển thị khung menu
+            Console.SetCursorPosition(45, 5);
+            Console.WriteLine("╔════════════════════════════════════╗");
+            Console.SetCursorPosition(45, 6);
+            Console.Write("║ Enter your name:                   ║"); // Sử dụng Write để giữ con trỏ trên cùng dòng
+            Console.SetCursorPosition(45, 7);
+            Console.WriteLine("╚════════════════════════════════════╝");
+
+            // Đặt con trỏ vào vị trí nhập tên
+            Console.SetCursorPosition(45 + 19, 6); // Sau "Enter your name:"
+
+            // Đọc tên người chơi
+            Console.ForegroundColor = ConsoleColor.White;
             string playerName = Console.ReadLine();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
+
+            // Hiển thị lời chào
+
+            Console.SetCursorPosition(0, 9); // Đặt con trỏ xuống phía dưới
+            Console.WriteLine($"\nChao mung {playerName}!");
             while (true)
             {
                 Console.Clear();
-                Console.SetCursorPosition(18, 5);
-                Console.WriteLine($"Hi {playerName}, Welcome to Pac-Man!");
-                Console.SetCursorPosition(10, 7);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                // Vẽ khung bao quanh
+                int width = 50; // Chiều rộng khung
+                int height = 15; // Chiều cao khung
+                int left = 40; // Vị trí bên trái
+                int top = 3; // Vị trí trên cùng
+
+                // Vẽ góc trên trái
+                Console.SetCursorPosition(left, top);
+                Console.Write("╔" + new string('═', width - 2) + "╗");
+
+                // Vẽ các cạnh bên
+                for (int i = 1; i < height - 1; i++)
+                {
+                    Console.SetCursorPosition(left, top + i);
+                    Console.Write("║" + new string(' ', width - 2) + "║");
+                }
+
+                // Vẽ góc dưới phải
+                Console.SetCursorPosition(left, top + height - 1);
+                Console.Write("╚" + new string('═', width - 2) + "╝");
+
+                // Hiển thị nội dung menu
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.SetCursorPosition(left + 5, top + 2);
+                Console.ForegroundColor = ConsoleColor.Yellow; 
+                Console.Write("Chao nguoi choi: ");
+                Console.ForegroundColor = ConsoleColor.White; 
+                Console.Write(playerName);
+                Console.ForegroundColor = ConsoleColor.Yellow; 
+                Console.SetCursorPosition(left + 5, top + 4);
                 Console.WriteLine("1. Bat dau tro choi");
-                Console.SetCursorPosition(10, 8);
+                Console.SetCursorPosition(left + 5, top + 5);
                 Console.WriteLine("2. Huong dan");
-                Console.SetCursorPosition(10, 9);
+                Console.SetCursorPosition(left + 5, top + 6);
                 Console.WriteLine("3. Thoat game");
 
-                Console.SetCursorPosition(10, 11);
-                Console.Write("Select an option: ");
-
+                Console.SetCursorPosition(left + 5, top + 8);
+                Console.Write("Chon: ");
                 ConsoleKey choice = Console.ReadKey(true).Key;
 
                 switch (choice)
@@ -221,7 +266,7 @@ internal class Program
                         Console.WriteLine("3.Khi PacMan an duoc hat nang luong, cac con ma se bi te liet và PacMan co the tieu diet chung bang cach cham vao chung, khi bi PacMan tieu diet, cac con ma se quay tro ve vi tri ban dau");
                         Console.WriteLine("4.PacMan se thang khi an het cac hat tren ban do va se thua khi bi ma bat");
                         Console.SetCursorPosition(10, 15);
-                        Console.WriteLine("Press any key to return to the menu...");
+                        Console.WriteLine("Nhan nut bat ki de quay lai Menu...");
                         Console.ReadKey(true);
                         break;
 
@@ -231,14 +276,16 @@ internal class Program
                         Console.Clear();
                         Console.SetCursorPosition(10, 15);
                         Console.WriteLine("Goodbye!");
-                        Thread.Sleep(1000);
+                        Thread.Sleep(100);
                         Environment.Exit(0);
                         break;
                     default:
-                        Console.SetCursorPosition(10, 13);
-                        Console.WriteLine("Invalid option. Please try again.");
-                        Thread.Sleep(10);
+                        int positionX = 51;// Adjust this to place it horizontally (e.g., left margin)
+                        int positionY = 11;
+                        Console.SetCursorPosition(positionX, positionY);
                         break;
+
+                      
                 }
             }
         }
@@ -261,7 +308,7 @@ internal class Program
                         {
                             audioFile.Position = 0; // Restart music
                         }
-                        Thread.Sleep(100); // Prevent CPU overuse
+                        Thread.Sleep(10); // Prevent CPU overuse
                     }
                 }
             }
@@ -273,7 +320,7 @@ internal class Program
 
         void EatingDotSound()
         {
-            string eatSoundFile = "eatingSound.wav";
+            string eatSoundFile = "eatingSound.wav";    
 
             // Run the sound playback in a non-blocking task
             Task.Run(() =>
@@ -288,7 +335,7 @@ internal class Program
                         // Wait for the sound to finish without blocking the main thread
                         while (eatingPlayer.PlaybackState == PlaybackState.Playing)
                         {
-                            Thread.Sleep(0); // Small sleep to reduce CPU usage
+                            Thread.Sleep(1); // Small sleep to reduce CPU usage
                         }
                     }
                 }
@@ -299,8 +346,43 @@ internal class Program
             });
         }
 
-    
-    
+        void DeadSound()
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    string deadSoundFile = "DeadSound.wav";
+                    // Play the sound
+                    using (var deadSound = new AudioFileReader(deadSoundFile))
+                    using (var player = new WaveOutEvent())
+                    {
+                        player.Init(deadSound);
+                        player.Play();
+
+                        // Wait until the sound finishes playing
+                        while (player.PlaybackState == PlaybackState.Playing)
+                        {
+                            Thread.Sleep(10);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error playing Pac-Man dead sound: {ex.Message}");
+                }
+            });
+        }
+        
+        Stopwatch gameTimer = new Stopwatch(); // Timer to track game duration
+        void ShowGameTimer()
+        {
+            int timerX = 0; // truc X
+            int timerY = 24; // truc Y
+            TimeSpan elapsed = gameTimer.Elapsed; Console.SetCursorPosition(timerX, timerY);
+            Console.ForegroundColor = ConsoleColor.Yellow; 
+            Console.WriteLine($"Thoi gian da choi: {elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}");
+        }
 
 
         char[,] Dots; //2d array for dots
@@ -308,12 +390,11 @@ internal class Program
         (int X, int Y) PacManPosition; //tuple of int X, Y
         Direction? PacManMovingDirection = default;
         int? PacManMovingFrame = default;
-        const int FramesToMoveHorizontal = 10;
-        const int FramesToMoveVertical = 10;
+        const int FramesToMoveHorizontal = 12;
+        const int FramesToMoveVertical = 12;
         Ghost[] Ghosts; //tạo mảng 
         const int GhostWeakTime = 200;
         (int X, int Y)[] Locations = GetLocations();
-
         Console.Clear(); //xóa màn hình Console
 
         ShowLogo();
@@ -325,12 +406,12 @@ internal class Program
         {
             if (OperatingSystem.IsWindows())
             {
-                Console.WindowWidth = 500;
+                Console.WindowWidth = 50;
                 Console.WindowHeight = 30;
             }
             Console.CursorVisible = false;
             Console.BackgroundColor = ConsoleColor.Black; //mau nen
-            Console.ForegroundColor = ConsoleColor.White; //mau chu
+            Console.ForegroundColor = ConsoleColor.Yellow; //mau chu
             Score = 0;
         NextRound:
             Score = 0;
@@ -341,27 +422,27 @@ internal class Program
             Ghost a = new();
             a.Position = a.StartPosition = (16, 10);
             a.Color = ConsoleColor.Red;
-            a.FramesToUpdate = 8;
+            a.FramesToUpdate = 14;
             a.Update = () => UpdateGhost(a);
 
             Ghost b = new();
             b.Position = b.StartPosition = (18, 10);
             b.Color = ConsoleColor.DarkGreen;
             b.Destination = GetRandomLocation();
-            b.FramesToUpdate = 8;
+            b.FramesToUpdate = 16;
             b.Update = () => UpdateGhost(b);
 
             Ghost c = new();
             c.Position = c.StartPosition = (22, 10);
             c.Color = ConsoleColor.Magenta;
-            c.FramesToUpdate = 8;
+            c.FramesToUpdate = 14;
             c.Update = () => UpdateGhost(c);
 
             Ghost d = new();
             d.Position = d.StartPosition = (24, 10);
             d.Color = ConsoleColor.DarkCyan;
             d.Destination = GetRandomLocation();
-            d.FramesToUpdate = 8;
+            d.FramesToUpdate = 16;
             d.Update = () => UpdateGhost(d);
 
             Ghosts = [a, b, c, d,];
@@ -373,12 +454,14 @@ internal class Program
             RenderPacMan();
             RenderGhosts();
             RenderScore();
+            ShowGameTimer();
             if (GetStartingDirectionInput())
             {
                 return; // user hit escape
             }
             PacManMovingFrame = 0;
             EraseReady();
+            gameTimer.Start();
             while (CountDots() > 0) //tiếp tục chạy khi . > 0
             {
                 if (HandleInput())
@@ -391,6 +474,7 @@ internal class Program
                 RenderDots();
                 RenderPacMan();
                 RenderGhosts();
+                ShowGameTimer();
                 foreach (Ghost ghost in Ghosts)
                 {
                     if (ghost.Position == PacManPosition)
@@ -403,6 +487,7 @@ internal class Program
                         }
                         else
                         {
+                            DeadSound();
                             Console.SetCursorPosition(0, 24);
                             Console.WriteLine("Game Over!");
                             Console.WriteLine("[enter] de choi lai hoac [escape] de thoat?");
@@ -416,7 +501,7 @@ internal class Program
                         }
                     }
                 }
-                Thread.Sleep(TimeSpan.FromMilliseconds(15)); //ngắt 15ms giữa các loop
+                Thread.Sleep(TimeSpan.FromMilliseconds(20)); //ngắt 20ms giữa các loop
             }
             goto NextRound;
         }
