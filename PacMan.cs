@@ -1,7 +1,10 @@
-﻿using System;
+﻿using NAudio.Wave;
+using NAudio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Towel;
 using static Towel.Statics;
 
@@ -119,11 +122,7 @@ internal class Program
             ")>- ->",
             "(<- -<",
         ];
-        string[] ghostArt = new string[]
-        {
-            "   |00|  ",
-            "   '^^'  " };
-          
+
 
         #endregion
 
@@ -141,7 +140,7 @@ internal class Program
             Console.SetCursorPosition(45, 5);
             Console.WriteLine("╔════════════════════════════════════╗");
             Console.SetCursorPosition(45, 6);
-            Console.WriteLine("║                  Pac-Man  !        ║");
+            Console.WriteLine("║              Pac-Man  !            ║");
             Console.SetCursorPosition(45, 7);
             Console.WriteLine("╚════════════════════════════════════╝");
 
@@ -178,19 +177,24 @@ internal class Program
             Console.ReadKey(true);
             Console.Clear();
         }
+
         void ShowMenu()
         {
+            Console.Clear();
+            Console.SetCursorPosition(10, 5);
+            Console.Write("Enter your name: ");
+            string playerName = Console.ReadLine();
             while (true)
             {
                 Console.Clear();
                 Console.SetCursorPosition(18, 5);
-                Console.WriteLine("Welcome to Pac-Man!");
+                Console.WriteLine($"Hi {playerName}, Welcome to Pac-Man!");
                 Console.SetCursorPosition(10, 7);
-                Console.WriteLine("1. Start Game");
+                Console.WriteLine("1. Bat dau tro choi");
                 Console.SetCursorPosition(10, 8);
-                Console.WriteLine("2. Instructions");
+                Console.WriteLine("2. Huong dan");
                 Console.SetCursorPosition(10, 9);
-                Console.WriteLine("3. Quit");
+                Console.WriteLine("3. Thoat game");
 
                 Console.SetCursorPosition(10, 11);
                 Console.Write("Select an option: ");
@@ -205,8 +209,17 @@ internal class Program
                         return;
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
-
+                        Console.Clear();
+                        Console.SetCursorPosition(10, 5);
+                        Console.WriteLine("1.De bat dau tro choi, nhan nut di chuyen (trai, phai, len, xuong) de di chuyen PacMan");
+                        Console.WriteLine("2.Nhiem vu cua ban la dieu khien PacMan an het cac hat diem va hat nang luong trong khi ne cac con ma.Neu con ma bat duoc ban, ban se chat va man choi ket thuc");
+                        Console.WriteLine("3.Khi PacMan an duoc hat nang luong, cac con ma se bi te liet và PacMan co the tieu diet chung bang cach cham vao chung, khi bi PacMan tieu diet, cac con ma se quay tro ve vi tri ban dau");
+                        Console.WriteLine("4.PacMan se thang khi an het cac hat tren ban do va se thua khi bi ma bat");
+                        Console.SetCursorPosition(10, 15);
+                        Console.WriteLine("Press any key to return to the menu...");
+                        Console.ReadKey(true);
                         break;
+
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
                         // Quit game
@@ -225,7 +238,6 @@ internal class Program
             }
         }
 
-
         char[,] Dots; //2d array for dots
         int Score; //store point
         (int X, int Y) PacManPosition; //tuple of int X, Y
@@ -238,9 +250,12 @@ internal class Program
         (int X, int Y)[] Locations = GetLocations();
 
         Console.Clear(); //xóa màn hình Console
+
         ShowLogo();
-        ShowMenu();
         
+        ShowMenu();
+
+
         try
         {
             if (OperatingSystem.IsWindows())
@@ -290,7 +305,7 @@ internal class Program
             RenderDots();
             RenderReady(); //hiện màn hình ready
             RenderPacMan();
-            RenderGhosts(10, 5);
+            RenderGhosts();
             RenderScore();
             if (GetStartingDirectionInput())
             {
@@ -309,33 +324,33 @@ internal class Program
                 RenderScore();
                 RenderDots();
                 RenderPacMan();
-                RenderGhosts(10, 5);
-                    foreach (Ghost ghost in Ghosts)
+                RenderGhosts();
+                foreach (Ghost ghost in Ghosts)
+                {
+                    if (ghost.Position == PacManPosition)
                     {
-                        if (ghost.Position == PacManPosition)
+                        if (ghost.Weak) //nếu Ghost đang Weak thì
                         {
-                            if (ghost.Weak) //nếu Ghost đang Weak thì
+                            ghost.Position = ghost.StartPosition;
+                            ghost.Weak = false;
+                            Score += 10;
+                        }
+                        else
+                        {
+                            Console.SetCursorPosition(0, 24);
+                            Console.WriteLine("Game Over!");
+                            Console.WriteLine("[enter] de choi lai hoac [escape] de thoat?");
+                        GetInput:
+                            switch (Console.ReadKey(true).Key) //chọn giữa 2 input
                             {
-                                ghost.Position = ghost.StartPosition;
-                                ghost.Weak = false;
-                                Score += 10;
-                            }
-                            else
-                            {
-                                Console.SetCursorPosition(0, 24);
-                                Console.WriteLine("Game Over!");
-                                Console.WriteLine("Play Again [enter], or quit [escape]?");
-                            GetInput:
-                                switch (Console.ReadKey(true).Key) //chọn giữa 2 input
-                                {
-                                    case ConsoleKey.Enter: goto NextRound;
-                                    case ConsoleKey.Escape: Console.Clear(); return;
-                                    default: goto GetInput;
-                                }
+                                case ConsoleKey.Enter: goto NextRound;
+                                case ConsoleKey.Escape: Console.Clear(); return;
+                                default: goto GetInput;
                             }
                         }
                     }
-                Thread.Sleep(TimeSpan.FromMilliseconds(40)); //ngắt 15ms giữa các loop
+                }
+                Thread.Sleep(TimeSpan.FromMilliseconds(15)); //ngắt 15ms giữa các loop
             }
             goto NextRound;
         }
@@ -486,6 +501,7 @@ internal class Program
                     {
                         Dots[PacManPosition.X, PacManPosition.Y] = ' ';
                         Score += 1;
+
                     }
                     if (Dots[PacManPosition.X, PacManPosition.Y] is '+') //ăn + thì
                     {
@@ -584,18 +600,13 @@ internal class Program
             });
         }
 
-        void RenderGhosts(int x, int y)
+        void RenderGhosts()
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-
-            // Render each line of the ghost art at the given position
-            for (int i = 0; i < ghostArt.Length; i++)
+            foreach (Ghost ghost in Ghosts)
             {
-                Console.SetCursorPosition(x, y + i);
-                Console.WriteLine(ghostArt[i]);
+                Console.SetCursorPosition(ghost.Position.X, ghost.Position.Y);
+                WithColors(ConsoleColor.White, ghost.Weak ? ConsoleColor.Blue : ghost.Color, () => Console.Write('"'));
             }
-
-            Console.ResetColor();
         }
 
 
