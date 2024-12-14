@@ -36,6 +36,7 @@ using static Towel.Statics;
 // ║ · · · · · · · · · · · · · · · · · · · ║
 // ╚═══════════════════════════════════════╝
 
+
 internal class Program
 {
     private static void Main(string[] args)
@@ -132,6 +133,10 @@ internal class Program
         int OriginalWindowHeight = Console.WindowHeight;
         ConsoleColor OriginalBackgroundColor = Console.BackgroundColor;
         ConsoleColor OriginalForegroundColor = Console.ForegroundColor;
+        IWavePlayer? _eatingPlayer;
+        IWavePlayer? _backgroundPlayer;
+        Task? _backgroundMusicTask;
+        CancellationTokenSource? _cancellationTokenSource;
 
         void ShowLogo()
         {
@@ -237,6 +242,66 @@ internal class Program
                 }
             }
         }
+        
+        void BackgroundMusic(string filePath)
+        {
+            try
+            {
+                using (var audioFile = new AudioFileReader(filePath))
+                using (var outputDevice = new WaveOutEvent())
+                {
+                    outputDevice.Init(audioFile);
+                    audioFile.Volume = 0.2f; // de nhac nen o muc 20%
+                    outputDevice.Play();
+
+                    // Loop the music
+                    while (true)
+                    {
+                        if (audioFile.Position >= audioFile.Length)
+                        {
+                            audioFile.Position = 0; // Restart music
+                        }
+                        Thread.Sleep(100); // Prevent CPU overuse
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error playing background music: {ex.Message}");
+            }
+        }
+
+        void EatingDotSound()
+        {
+            string eatSoundFile = "eatingSound.wav";
+
+            // Run the sound playback in a non-blocking task
+            Task.Run(() =>
+            {
+                try
+                {
+                    using (var eatingSound = new AudioFileReader(eatSoundFile))
+                    using (var eatingPlayer = new WaveOutEvent())
+                    {
+                        eatingPlayer.Init(eatingSound);
+                        eatingPlayer.Play();
+                        // Wait for the sound to finish without blocking the main thread
+                        while (eatingPlayer.PlaybackState == PlaybackState.Playing)
+                        {
+                            Thread.Sleep(0); // Small sleep to reduce CPU usage
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error playing eating sound: {ex.Message}");
+                }
+            });
+        }
+
+    
+    
+
 
         char[,] Dots; //2d array for dots
         int Score; //store point
@@ -252,7 +317,7 @@ internal class Program
         Console.Clear(); //xóa màn hình Console
 
         ShowLogo();
-        
+        Task.Run(() => BackgroundMusic("background.wav"));
         ShowMenu();
 
 
@@ -268,6 +333,7 @@ internal class Program
             Console.ForegroundColor = ConsoleColor.White; //mau chu
             Score = 0;
         NextRound:
+            Score = 0;
             Console.Clear();
             SetUpDots(); //Gọi hàm để tạo .
             PacManPosition = (20, 17);
@@ -501,6 +567,8 @@ internal class Program
                     {
                         Dots[PacManPosition.X, PacManPosition.Y] = ' ';
                         Score += 1;
+                        EatingDotSound();
+
 
                     }
                     if (Dots[PacManPosition.X, PacManPosition.Y] is '+') //ăn + thì
