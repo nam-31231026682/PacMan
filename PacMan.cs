@@ -9,8 +9,6 @@ using static Towel.Statics;
 using System.Diagnostics;
 using System.IO;
 
-
-
 #region Ascii
 
 // ╔═══════════════════╦═══════════════════╗
@@ -23,7 +21,7 @@ using System.IO;
 // ╚═════╗ · ╠══════   ╨   ══════╣ · ╔═════╝
 //       ║ · ║                   ║ · ║
 // ══════╝ · ╨   ╔════---════╗   ╨ · ╚══════
-//         ·     ║ █ █   █ █ ║     ·        
+//         ·     ║ █ █   █ █ ║     ·
 // ══════╗ · ╥   ║           ║   ╥ · ╔══════
 //       ║ · ║   ╚═══════════╝   ║ · ║
 //       ║ · ║       READY       ║ · ║
@@ -36,7 +34,6 @@ using System.IO;
 // ║ · ══════╩══════ · ╨ · ══════╩══════ · ║
 // ║ · · · · · · · · · · · · · · · · · · · ║
 // ╚═══════════════════════════════════════╝
-
 
 internal class Program
 {
@@ -123,7 +120,8 @@ internal class Program
             ")>- ->",
             "(<- -<",
         ];
-        #endregion
+
+        #endregion Ascii
 
         int OriginalWindowWidth = Console.WindowWidth;
         int OriginalWindowHeight = Console.WindowHeight;
@@ -142,8 +140,7 @@ internal class Program
             Console.SetCursorPosition(45, 7);
             Console.WriteLine("╚════════════════════════════════════╝");
 
-
-            // Display Pac-Man ASCII art
+            // Hien thi Pac-Man duoi dang ASCII
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.SetCursorPosition(53, 8);
@@ -192,11 +189,11 @@ internal class Program
             Console.SetCursorPosition(0, 9); // Đặt con trỏ xuống phía dưới
             Console.WriteLine($"\nChao mung {playerName}!");
         }
-        
+
         void ShowMenu()
         {
             LoadLeaderboard();
-            
+
             while (true)
             {
                 //Console.Clear();
@@ -225,11 +222,11 @@ internal class Program
                 //// Hiển thị nội dung menu
                 //Console.ForegroundColor = ConsoleColor.Yellow;
                 //Console.SetCursorPosition(left + 5, top + 2);
-                //Console.ForegroundColor = ConsoleColor.Yellow; 
+                //Console.ForegroundColor = ConsoleColor.Yellow;
                 //Console.Write("Chao nguoi choi: ");
-                //Console.ForegroundColor = ConsoleColor.White; 
+                //Console.ForegroundColor = ConsoleColor.White;
                 //Console.Write(playerName);
-                //Console.ForegroundColor = ConsoleColor.Yellow; 
+                //Console.ForegroundColor = ConsoleColor.Yellow;
                 //Console.SetCursorPosition(left + 5, top + 4);
                 //Console.WriteLine("[1] Bat dau tro choi");
                 //Console.SetCursorPosition(left + 5, top + 5);
@@ -275,12 +272,11 @@ internal class Program
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("Dang tai...");
-                        Thread.Sleep(1000); 
+                        Thread.Sleep(1000);
                         return; // Exit menu and proceed to game
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
                         Console.Clear();
-
 
                         Console.SetCursorPosition(13, 2);
                         Console.WriteLine("╔═════════════════════════════════════════════════════════╗");
@@ -299,11 +295,10 @@ internal class Program
                         Console.SetCursorPosition(10, 15);
                         Console.WriteLine("Nhan nut bat ki de quay ve Menu...");
 
-
-
                         Console.ReadKey(true);
 
                         break;
+
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
                         Console.Clear();
@@ -321,6 +316,7 @@ internal class Program
                         Thread.Sleep(1000);
                         Environment.Exit(0);
                         break;
+
                     default:
                         int positionX = 51;// Adjust this to place it horizontally (e.g., left margin)
                         int positionY = 11;
@@ -329,10 +325,9 @@ internal class Program
                 }
             }
         }
-        
+
         //void PlayGame()
         //{
-
         //    try
         //    {
         //        Console.Clear();
@@ -371,7 +366,6 @@ internal class Program
         //        Thread.Sleep(2000);
         //        Environment.Exit(0);
         //    }
-
 
         //}
 
@@ -434,7 +428,7 @@ internal class Program
 
         void EatingDotSound()
         {
-            string eatSoundFile = "eatingSound.wav";    
+            string eatSoundFile = "eatingSound.wav";
 
             // Run the sound playback in a non-blocking task
             Task.Run(() =>
@@ -487,68 +481,68 @@ internal class Program
                 }
             });
         }
-        
+
         Stopwatch gameTimer = new Stopwatch(); // Timer to track game duration
         void ShowGameTimer()
         {
             int timerX = 0; // truc X
             int timerY = 24; // truc Y
             TimeSpan elapsed = gameTimer.Elapsed; Console.SetCursorPosition(timerX, timerY);
-            Console.ForegroundColor = ConsoleColor.Yellow; 
-            Console.WriteLine($"Thoi gian da choi: {elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Thoi gian choi: {elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}");
         }
 
         List<(string playerName, int Score)> Leaderboard = new();
-            void ShowLeaderboard()
+
+        void ShowLeaderboard()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("╔═══════════════════════╗");
+            Console.WriteLine("║     BANG XEP HANG     ║");
+            Console.WriteLine("╚═══════════════════════╝");
+            if (Leaderboard.Count == 0)
             {
-                Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("╔═══════════════════════╗");
-                Console.WriteLine("║     BANG XEP HANG     ║");
-                Console.WriteLine("╚═══════════════════════╝");
-                if (Leaderboard.Count == 0)
+                Console.WriteLine("Chua co thong tin");
+            }
+            else
+            {
+                Console.WriteLine("{0, 4} {1,-25} {2,5}", "Hang", "Ten", "Diem");
+                Console.WriteLine(new string('-', 35));
+                int rank = 1;
+                foreach (var (playerName, Score) in Leaderboard)
                 {
-                    Console.WriteLine("Chua co thong tin");
-                }
-                else
-                {
-                    Console.WriteLine("{0, 4} {1,-25} {2,5}", "Hang", "Ten", "Diem");
-                    Console.WriteLine(new string('-', 35));
-                    int rank = 1;
-                    foreach (var (playerName, Score) in Leaderboard)
-                    {
                     // Dynamically limit name length if it gets too long
-                    string formattedName = playerName.Length > 25 ? playerName.Substring(0, 22) + "..." : playerName;
+                    string formattedName = playerName.Length > 20 ? playerName.Substring(0, 15) + "..." : playerName;
                     Console.WriteLine("{0,4} {1,-25} {2,5}", rank, formattedName, Score);
                     rank++;
                 }
-                }
             }
+        }
 
-            void UpdateLeaderboard(string playerName, int score)
+        void UpdateLeaderboard(string playerName, int score)
+        {
+            if (!string.IsNullOrWhiteSpace(playerName) && score > 0)
             {
-                if (!string.IsNullOrWhiteSpace(playerName) && score > 0)
-                {
-                    Leaderboard.Add((playerName, score));
-                    Leaderboard = Leaderboard
-                    .OrderByDescending(record => record.Score)
-                    .Take(10)
-                    .ToList();
-                    SaveLeaderboard();
-                }
+                Leaderboard.Add((playerName, score));
+                Leaderboard = Leaderboard
+                .OrderByDescending(record => record.Score)
+                .Take(10)
+                .ToList();
+                SaveLeaderboard();
             }
+        }
 
-            void SaveLeaderboard()
-            {
-                string filePath = @"C:\Users\nhn30\source\repos\PacMan_UseThis\leaderboard\leaderboard.txt";
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                // Write updated leaderboard back to the file
-                File.WriteAllLines(filePath, Leaderboard.Select(record => $"{record.playerName},{record.Score}"));
-            }
+        void SaveLeaderboard()
+        {
+            string filePath = @"C:\Users\nhn30\source\repos\PacMan_UseThis\leaderboard\leaderboard.txt";
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            // Write updated leaderboard back to the file
+            File.WriteAllLines(filePath, Leaderboard.Select(record => $"{record.playerName},{record.Score}"));
+        }
 
-
-            void LoadLeaderboard()
-            {
+        void LoadLeaderboard()
+        {
             string filePath = @"C:\Users\nhn30\source\repos\PacMan_UseThis\leaderboard\leaderboard.txt";
             try
             {
@@ -563,30 +557,29 @@ internal class Program
                 .ToList();
                 }
             }
-
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading leaderboard: {ex.Message}");
                 Leaderboard = new List<(string Name, int Score)>();
             }
-            }
+        }
 
-            char[,] Dots; //2d array for dots
-            int Score; //store point
-            (int X, int Y) PacManPosition; //tuple of int X, Y
-            Direction? PacManMovingDirection = default;
-            int? PacManMovingFrame = default;
-            const int FramesToMoveHorizontal = 8;
-            const int FramesToMoveVertical = 10;
-            Ghost[] Ghosts; //tạo mảng 
-            const int GhostWeakTime = 150;
-            (int X, int Y)[] Locations = GetLocations();
-            Console.Clear(); //xóa màn hình Console
+        char[,] Dots; //2d array for dots
+        int Score; //store point
+        (int X, int Y) PacManPosition; //tuple of int X, Y
+        Direction? PacManMovingDirection = default;
+        int? PacManMovingFrame = default;
+        const int FramesToMoveHorizontal = 8;
+        const int FramesToMoveVertical = 10;
+        Ghost[] Ghosts; //tạo mảng
+        const int GhostWeakTime = 150;
+        (int X, int Y)[] Locations = GetLocations();
+        Console.Clear(); //xóa màn hình Console
 
-            ShowLogo();
-            Task.Run(() => BackgroundMusic("background.wav"));
-            AskName();
-            ShowMenu();
+        ShowLogo();
+        Task.Run(() => BackgroundMusic("background.wav"));
+        AskName();
+        ShowMenu();
         try
         {
             if (OperatingSystem.IsWindows())
@@ -653,7 +646,7 @@ internal class Program
                 {
                     return; // user hit escape
                 }
-                UpdatePacMan(); //cập nhật trạng thái 
+                UpdatePacMan(); //cập nhật trạng thái
                 UpdateGhosts();
                 RenderScore();
                 RenderDots();
@@ -675,8 +668,9 @@ internal class Program
                             DeadSound();
                             Console.SetCursorPosition(0, 24);
                             Console.WriteLine("Game Over!");
-                            Console.WriteLine("[Enter] choi lai || [Escape] thoat || [M] Quay ve Menu ");
-                            UpdateLeaderboard(playerName,Score); // Pass the player's name and final score
+                            Console.WriteLine("[Enter] choi lai  [Escape] thoat || [M] Quay ve Menu ");
+                            Console.WriteLine("[Escape] thoat");
+                            UpdateLeaderboard(playerName, Score); // Pass the player's name and final score
                             SaveLeaderboard(); // Write the updated leaderboard to the file
                             while (true)
                             {
@@ -691,6 +685,7 @@ internal class Program
                                         Thread.Sleep(100);
                                         Environment.Exit(0); // Exit the application
                                         break;
+
                                     case ConsoleKey.M: // Return to menu
                                         ShowMenu(); // Call the menu method
                                         return; // Exit the current game loop and return to the menu
@@ -702,11 +697,11 @@ internal class Program
                         }
                     }
                 }
-                Thread.Sleep(TimeSpan.FromMilliseconds(15)); //ngắt 20ms giữa các loop
+                Thread.Sleep(TimeSpan.FromMilliseconds(15)); //ngắt 15ms giữa các loop
             }
             goto NextRound;
         }
-        finally //luôn execute bất kể ở trên trả lại gì 
+        finally //luôn execute bất kể ở trên trả lại gì
         {
             Console.CursorVisible = false;
             if (OperatingSystem.IsWindows())
@@ -719,11 +714,10 @@ internal class Program
             Score = 0;
         }
 
-
         bool GetStartingDirectionInput()
         {
         GetInput: //chờ input từ người chơi rồi mới bắt đầu
-            ConsoleKey key = Console.ReadKey(true).Key; //đọc user input và xử lí 
+            ConsoleKey key = Console.ReadKey(true).Key; //đọc user input và xử lí
             switch (key) //xử lí
             {
                 case ConsoleKey.LeftArrow: PacManMovingDirection = Direction.Left; break;
@@ -744,7 +738,7 @@ internal class Program
                     PacManMovingDirection != direction && //hướng mới phải # hướng đang di chuyển
                     CanMove(PacManPosition.X, PacManPosition.Y, direction)) //check đường đi có avai ko
                 {
-                    PacManMovingDirection = direction; //update hướng di chuyển 
+                    PacManMovingDirection = direction; //update hướng di chuyển
                     PacManMovingFrame = 0; //reset khung hình
                     moved = true;
                 }
@@ -774,7 +768,7 @@ internal class Program
 
         bool CanMove(int x, int y, Direction direction) => direction switch
         {
-            Direction.Up => //check 3 ô phía trên 
+            Direction.Up => //check 3 ô phía trên
                 !IsWall(x - 1, y - 1) && //ô trên trái
                 !IsWall(x, y - 1) &&  //ô trên giữa
                 !IsWall(x + 1, y - 1), //ô trên phải
@@ -854,8 +848,6 @@ internal class Program
                         Dots[PacManPosition.X, PacManPosition.Y] = ' ';
                         Score += 1;
                         EatingDotSound();
-
-
                     }
                     if (Dots[PacManPosition.X, PacManPosition.Y] is '+') //ăn + thì
                     {
@@ -963,7 +955,6 @@ internal class Program
             }
         }
 
-
         void WithColors(ConsoleColor foreground, ConsoleColor background, Action action)
         {
             ConsoleColor originalForeground = Console.ForegroundColor;
@@ -1037,8 +1028,6 @@ internal class Program
             }
         }
 
-
-
         (int X, int Y)[] GetLocations()
         {
             List<(int X, int Y)> list = new();
@@ -1106,8 +1095,7 @@ internal class Program
     }
 }
 
-
-class Ghost
+internal class Ghost
 {
     public (int X, int Y) StartPosition;
     public (int X, int Y) Position;
@@ -1120,7 +1108,7 @@ class Ghost
     public (int X, int Y)? Destination;
 }
 
-enum Direction
+internal enum Direction
 { //determine how how PacMan update its position based on user's input
     Up = 0,
     Down = 1,
