@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Towel;
 using static Towel.Statics;
 using System.Diagnostics;
+using System.IO;
 
 
 
@@ -115,7 +116,6 @@ internal class Program
             "  ·               ·   ·               ·  \n" +
             "  · · · · · · · · · · · · · · · · · · ·  \n" +
             "                                         ";
-
         string[] PacManAnimations =
         [
             "\"' '\"",
@@ -123,16 +123,13 @@ internal class Program
             ")>- ->",
             "(<- -<",
         ];
-
-
         #endregion
-
-
 
         int OriginalWindowWidth = Console.WindowWidth;
         int OriginalWindowHeight = Console.WindowHeight;
         ConsoleColor OriginalBackgroundColor = Console.BackgroundColor;
         ConsoleColor OriginalForegroundColor = Console.ForegroundColor;
+        string playerName = string.Empty;
 
         void ShowLogo()
         {
@@ -169,114 +166,144 @@ internal class Program
             Console.WriteLine("⠀⠀⠈⠙⠿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀");
             Console.SetCursorPosition(53, 17);
             Console.WriteLine("⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀");
-
-            // Prompt User to Continue
-            Console.SetCursorPosition(48, 20);
+            Console.SetCursorPosition(48, 18);
             Console.WriteLine("Nhan nut bat ki de tiep tuc...");
-
-            // Wait for user input
+            // Cho nguoi dung nhan 1 phim bat ky
             Console.ReadKey(true);
             Console.Clear();
         }
-        
 
-
-        void ShowMenu()
+        void AskName()
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Yellow;
-
-            // Hiển thị khung menu
             Console.SetCursorPosition(45, 5);
             Console.WriteLine("╔════════════════════════════════════╗");
             Console.SetCursorPosition(45, 6);
             Console.Write("║ Enter your name:                   ║"); // Sử dụng Write để giữ con trỏ trên cùng dòng
             Console.SetCursorPosition(45, 7);
             Console.WriteLine("╚════════════════════════════════════╝");
-
             // Đặt con trỏ vào vị trí nhập tên
             Console.SetCursorPosition(45 + 19, 6); // Sau "Enter your name:"
-
             // Đọc tên người chơi
             Console.ForegroundColor = ConsoleColor.White;
-            string playerName = Console.ReadLine();
+            playerName = Console.ReadLine()?.Trim();
             Console.ForegroundColor = ConsoleColor.Yellow;
-
-
-            // Hiển thị lời chào
-
             Console.SetCursorPosition(0, 9); // Đặt con trỏ xuống phía dưới
             Console.WriteLine($"\nChao mung {playerName}!");
+        }
+        
+        void ShowMenu()
+        {
+            LoadLeaderboard();
+            
             while (true)
             {
+                //Console.Clear();
+                //Console.ForegroundColor = ConsoleColor.Yellow;
+                //// Vẽ khung bao quanh
+                //int width = 50; // Chiều rộng khung
+                //int height = 15; // Chiều cao khung
+                //int left = 40; // Vị trí bên trái
+                //int top = 3; // Vị trí trên cùng
+
+                //// Vẽ góc trên trái
+                //Console.SetCursorPosition(left, top);
+                //Console.Write("╔" + new string('═', width - 2) + "╗");
+
+                //// Vẽ các cạnh bên
+                //for (int i = 1; i < height - 1; i++)
+                //{
+                //    Console.SetCursorPosition(left, top + i);
+                //    Console.Write("║" + new string(' ', width - 2) + "║");
+                //}
+
+                //// Vẽ góc dưới phải
+                //Console.SetCursorPosition(left, top + height - 1);
+                //Console.Write("╚" + new string('═', width - 2) + "╝");
+
+                //// Hiển thị nội dung menu
+                //Console.ForegroundColor = ConsoleColor.Yellow;
+                //Console.SetCursorPosition(left + 5, top + 2);
+                //Console.ForegroundColor = ConsoleColor.Yellow; 
+                //Console.Write("Chao nguoi choi: ");
+                //Console.ForegroundColor = ConsoleColor.White; 
+                //Console.Write(playerName);
+                //Console.ForegroundColor = ConsoleColor.Yellow; 
+                //Console.SetCursorPosition(left + 5, top + 4);
+                //Console.WriteLine("[1] Bat dau tro choi");
+                //Console.SetCursorPosition(left + 5, top + 5);
+                //Console.WriteLine("[2] Huong dan");
+                //Console.SetCursorPosition(left + 5, top + 6);
+                //Console.WriteLine("[3] Bang xep hang");
+                //Console.SetCursorPosition(left + 5, top + 7);
+                //Console.WriteLine("[4] Thoat game");
+                //Console.SetCursorPosition(left + 5, top + 9);
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                // Vẽ khung bao quanh
-                int width = 50; // Chiều rộng khung
-                int height = 15; // Chiều cao khung
-                int left = 40; // Vị trí bên trái
-                int top = 3; // Vị trí trên cùng
-
-                // Vẽ góc trên trái
-                Console.SetCursorPosition(left, top);
-                Console.Write("╔" + new string('═', width - 2) + "╗");
-
-                // Vẽ các cạnh bên
-                for (int i = 1; i < height - 1; i++)
-                {
-                    Console.SetCursorPosition(left, top + i);
-                    Console.Write("║" + new string(' ', width - 2) + "║");
-                }
-
-                // Vẽ góc dưới phải
-                Console.SetCursorPosition(left, top + height - 1);
-                Console.Write("╚" + new string('═', width - 2) + "╝");
-
-                // Hiển thị nội dung menu
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.SetCursorPosition(left + 5, top + 2);
-                Console.ForegroundColor = ConsoleColor.Yellow; 
-                Console.Write("Chao nguoi choi: ");
-                Console.ForegroundColor = ConsoleColor.White; 
-                Console.Write(playerName);
-                Console.ForegroundColor = ConsoleColor.Yellow; 
-                Console.SetCursorPosition(left + 5, top + 4);
-                Console.WriteLine("1. Bat dau tro choi");
-                Console.SetCursorPosition(left + 5, top + 5);
-                Console.WriteLine("2. Huong dan");
-                Console.SetCursorPosition(left + 5, top + 6);
-                Console.WriteLine("3. Thoat game");
-
-                Console.SetCursorPosition(left + 5, top + 8);
+                Console.SetCursorPosition(35, 4);
+                Console.WriteLine("╔════════════════════════════════════════════════╗");
+                Console.SetCursorPosition(35, 5);
+                Console.WriteLine("║    Chao nguoi choi: " + playerName.PadRight(27) + "║");
+                Console.SetCursorPosition(35, 6);
+                Console.WriteLine("║                                                ║");
+                Console.SetCursorPosition(35, 7);
+                Console.WriteLine("║    [1] Bat dau tro choi                        ║");
+                Console.SetCursorPosition(35, 8);
+                Console.WriteLine("║    [2] Huong dan                               ║");
+                Console.SetCursorPosition(35, 9);
+                Console.WriteLine("║    [3] Bang xep hang                           ║");
+                Console.SetCursorPosition(35, 10);
+                Console.WriteLine("║    [4] Thoat game                              ║");
+                Console.SetCursorPosition(35, 11);
+                Console.WriteLine("║                                                ║");
+                Console.SetCursorPosition(35, 12);
+                Console.WriteLine("║                                                ║");
+                Console.SetCursorPosition(35, 13);
+                Console.WriteLine("║                                                ║");
+                Console.SetCursorPosition(40, 12);
                 Console.Write("Chon: ");
+                Console.SetCursorPosition(35, 14);
+                Console.WriteLine("╚════════════════════════════════════════════════╝");
+                Console.ResetColor();
                 ConsoleKey choice = Console.ReadKey(true).Key;
 
                 switch (choice)
                 {
                     case ConsoleKey.D1:
                     case ConsoleKey.NumPad1:
-                        // User chooses to start the game
-                        return;
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("Dang tai...");
+                        Thread.Sleep(1000); 
+                        return; // Exit menu and proceed to game
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
                         Console.Clear();
                         Console.SetCursorPosition(10, 5);
-                        Console.WriteLine("1.De bat dau tro choi, nhan nut di chuyen (trai, phai, len, xuong) de di chuyen PacMan");
-                        Console.WriteLine("2.Nhiem vu cua ban la dieu khien PacMan an het cac hat diem va hat nang luong trong khi ne cac con ma.Neu con ma bat duoc ban, ban se chat va man choi ket thuc");
-                        Console.WriteLine("3.Khi PacMan an duoc hat nang luong, cac con ma se bi te liet và PacMan co the tieu diet chung bang cach cham vao chung, khi bi PacMan tieu diet, cac con ma se quay tro ve vi tri ban dau");
-                        Console.WriteLine("4.PacMan se thang khi an het cac hat tren ban do va se thua khi bi ma bat");
+                        Console.WriteLine("1. De bat dau tro choi, nhan nut di chuyen trai hoac phai");
+                        Console.WriteLine("2. Nhiem vu cua ban la dieu khien PacMan an het cac hat diem (.) va hat nang luong (+) .Neu Ma bat duoc ban 1 lan, man choi se ket thuc");
+                        Console.WriteLine("3. Khi PacMan an duoc hat nang luong (+), Ma se bi te liet và PacMan co the cham vao chung va Ma se quay tro ve vi tri ban dau");
+                        Console.WriteLine("4. PacMan se thang khi an het cac hat tren ban do");
                         Console.SetCursorPosition(10, 15);
                         Console.WriteLine("Nhan nut bat ki de quay lai Menu...");
                         Console.ReadKey(true);
                         break;
-
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
+                        Console.Clear();
+                        ShowLeaderboard();
+                        Console.WriteLine("\nPress any key to return to the menu...");
+                        Console.ReadKey(true); // Wait for user input
+                        break;
+
+                    case ConsoleKey.D4:
+                    case ConsoleKey.NumPad4:
                         // Quit game
                         Console.Clear();
                         Console.SetCursorPosition(10, 15);
                         Console.WriteLine("Goodbye!");
-                        Thread.Sleep(100);
+                        Thread.Sleep(1000);
                         Environment.Exit(0);
                         break;
                     default:
@@ -284,12 +311,85 @@ internal class Program
                         int positionY = 11;
                         Console.SetCursorPosition(positionX, positionY);
                         break;
-
-                      
                 }
             }
         }
         
+        //void PlayGame()
+        //{
+
+        //    try
+        //    {
+        //        Console.Clear();
+        //        Console.WriteLine("Dang tai..."); // Simulated loading
+        //        Thread.Sleep(1000); // Simulate a delay for loading
+        //        Console.Clear();
+
+        //        while (true)
+        //        {
+        //            Console.WriteLine("Game started... Press [M] to return to the menu or Enter to simulate death.");
+        //            var input = Console.ReadKey(true).Key;
+
+        //            if (input == ConsoleKey.M)
+        //            {
+        //                ShowMenu(); // Go back to the menu
+        //                return; // Exit the game loop
+        //            }
+        //            else if (input == ConsoleKey.Enter)
+        //            {
+        //                DeadSound();
+        //                Console.Clear();
+        //                Console.WriteLine("Game Over!");
+        //                Console.WriteLine("[Enter] choi lai || [Escape] thoat || [M] Quay ve Menu ");
+        //                UpdateLeaderboard(playerName, 100); // Simulate score
+        //                SaveLeaderboard();
+        //                HandlePostGame();
+        //                break;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.Clear();
+        //        Console.WriteLine("An error occurred: " + ex.Message);
+        //        Console.WriteLine("Exiting...");
+        //        Thread.Sleep(2000);
+        //        Environment.Exit(0);
+        //    }
+
+
+        //}
+
+        //void HandlePostGame()
+        //{
+        //    Console.Clear();
+        //    Console.WriteLine("Game Over!");
+        //    Console.WriteLine("[Enter] Play Again | [M] Return to Menu | [Escape] Exit");
+
+        //    while (true)
+        //    {
+        //        var key = Console.ReadKey(true).Key;
+
+        //        switch (key)
+        //        {
+        //            case ConsoleKey.Enter: // Restart game
+        //                PlayGame(); // Restart game logic
+        //                return;
+        //            case ConsoleKey.M: // Return to menu
+        //                return;
+        //            case ConsoleKey.Escape: // Exit game
+        //                Console.Clear();
+        //                Console.WriteLine("Goodbye!");
+        //                Thread.Sleep(1000);
+        //                Environment.Exit(0); // Exit the application
+        //                break;
+        //            default:
+        //                Console.WriteLine("Invalid selection! Please try again.");
+        //                break;
+        //        }
+        //    }
+        //}
+
         void BackgroundMusic(string filePath)
         {
             try
@@ -308,7 +408,6 @@ internal class Program
                         {
                             audioFile.Position = 0; // Restart music
                         }
-                        Thread.Sleep(10); // Prevent CPU overuse
                     }
                 }
             }
@@ -384,29 +483,100 @@ internal class Program
             Console.WriteLine($"Thoi gian da choi: {elapsed.Hours:D2}:{elapsed.Minutes:D2}:{elapsed.Seconds:D2}");
         }
 
+        List<(string playerName, int Score)> Leaderboard = new();
+            void ShowLeaderboard()
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("╔═══════════════════════╗");
+                Console.WriteLine("║     BANG XEP HANG     ║");
+                Console.WriteLine("╚═══════════════════════╝");
+                if (Leaderboard.Count == 0)
+                {
+                    Console.WriteLine("Chua co thong tin");
+                }
+                else
+                {
+                    Console.WriteLine("{0, 4} {1,-25} {2,5}", "Hang", "Ten", "Diem");
+                    Console.WriteLine(new string('-', 35));
+                    int rank = 1;
+                    foreach (var (playerName, Score) in Leaderboard)
+                    {
+                    // Dynamically limit name length if it gets too long
+                    string formattedName = playerName.Length > 25 ? playerName.Substring(0, 22) + "..." : playerName;
+                    Console.WriteLine("{0,4} {1,-25} {2,5}", rank, formattedName, Score);
+                    rank++;
+                }
+                }
+            }
 
-        char[,] Dots; //2d array for dots
-        int Score; //store point
-        (int X, int Y) PacManPosition; //tuple of int X, Y
-        Direction? PacManMovingDirection = default;
-        int? PacManMovingFrame = default;
-        const int FramesToMoveHorizontal = 12;
-        const int FramesToMoveVertical = 12;
-        Ghost[] Ghosts; //tạo mảng 
-        const int GhostWeakTime = 200;
-        (int X, int Y)[] Locations = GetLocations();
-        Console.Clear(); //xóa màn hình Console
+            void UpdateLeaderboard(string playerName, int score)
+            {
+                if (!string.IsNullOrWhiteSpace(playerName) && score > 0)
+                {
+                    Leaderboard.Add((playerName, score));
+                    Leaderboard = Leaderboard
+                    .OrderByDescending(record => record.Score)
+                    .Take(10)
+                    .ToList();
+                    SaveLeaderboard();
+                }
+            }
 
-        ShowLogo();
-        Task.Run(() => BackgroundMusic("background.wav"));
-        ShowMenu();
+            void SaveLeaderboard()
+            {
+                string filePath = @"C:\Users\nhn30\source\repos\PacMan_UseThis\leaderboard\leaderboard.txt";
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                // Write updated leaderboard back to the file
+                File.WriteAllLines(filePath, Leaderboard.Select(record => $"{record.playerName},{record.Score}"));
+            }
 
 
+            void LoadLeaderboard()
+            {
+            string filePath = @"C:\Users\nhn30\source\repos\PacMan_UseThis\leaderboard\leaderboard.txt";
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    Leaderboard = File.ReadAllLines(filePath)
+                .Select(line => line.Split(','))
+                .Where(parts => parts.Length == 2 && int.TryParse(parts[1], out _))
+                .Select(parts => (Name: parts[0].Trim(), Score: int.Parse(parts[1].Trim())))
+                .OrderByDescending(record => record.Score)
+                .Take(10)
+                .ToList();
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading leaderboard: {ex.Message}");
+                Leaderboard = new List<(string Name, int Score)>();
+            }
+            }
+
+            char[,] Dots; //2d array for dots
+            int Score; //store point
+            (int X, int Y) PacManPosition; //tuple of int X, Y
+            Direction? PacManMovingDirection = default;
+            int? PacManMovingFrame = default;
+            const int FramesToMoveHorizontal = 8;
+            const int FramesToMoveVertical = 10;
+            Ghost[] Ghosts; //tạo mảng 
+            const int GhostWeakTime = 150;
+            (int X, int Y)[] Locations = GetLocations();
+            Console.Clear(); //xóa màn hình Console
+
+            ShowLogo();
+            Task.Run(() => BackgroundMusic("background.wav"));
+            AskName();
+            ShowMenu();
         try
         {
             if (OperatingSystem.IsWindows())
             {
-                Console.WindowWidth = 50;
+                Console.WindowWidth = 100;
                 Console.WindowHeight = 30;
             }
             Console.CursorVisible = false;
@@ -422,27 +592,27 @@ internal class Program
             Ghost a = new();
             a.Position = a.StartPosition = (16, 10);
             a.Color = ConsoleColor.Red;
-            a.FramesToUpdate = 14;
+            a.FramesToUpdate = 8;
             a.Update = () => UpdateGhost(a);
 
             Ghost b = new();
             b.Position = b.StartPosition = (18, 10);
             b.Color = ConsoleColor.DarkGreen;
             b.Destination = GetRandomLocation();
-            b.FramesToUpdate = 16;
+            b.FramesToUpdate = 10;
             b.Update = () => UpdateGhost(b);
 
             Ghost c = new();
             c.Position = c.StartPosition = (22, 10);
             c.Color = ConsoleColor.Magenta;
-            c.FramesToUpdate = 14;
+            c.FramesToUpdate = 8;
             c.Update = () => UpdateGhost(c);
 
             Ghost d = new();
             d.Position = d.StartPosition = (24, 10);
             d.Color = ConsoleColor.DarkCyan;
             d.Destination = GetRandomLocation();
-            d.FramesToUpdate = 16;
+            d.FramesToUpdate = 10;
             d.Update = () => UpdateGhost(d);
 
             Ghosts = [a, b, c, d,];
@@ -490,18 +660,34 @@ internal class Program
                             DeadSound();
                             Console.SetCursorPosition(0, 24);
                             Console.WriteLine("Game Over!");
-                            Console.WriteLine("[enter] de choi lai hoac [escape] de thoat?");
-                        GetInput:
-                            switch (Console.ReadKey(true).Key) //chọn giữa 2 input
+                            Console.WriteLine("[Enter] choi lai || [Escape] thoat || [M] Quay ve Menu ");
+                            UpdateLeaderboard(playerName,Score); // Pass the player's name and final score
+                            SaveLeaderboard(); // Write the updated leaderboard to the file
+                            while (true)
                             {
-                                case ConsoleKey.Enter: goto NextRound;
-                                case ConsoleKey.Escape: Console.Clear(); return;
-                                default: goto GetInput;
+                                var key = Console.ReadKey(true).Key;
+                                switch (key)
+                                {
+                                    case ConsoleKey.Enter: // Replay the game
+                                        goto NextRound; // Restart the game
+                                    case ConsoleKey.Escape: // Exit the game
+                                        Console.Clear();
+                                        Console.WriteLine("Goodbye!");
+                                        Thread.Sleep(100);
+                                        Environment.Exit(0); // Exit the application
+                                        break;
+                                    case ConsoleKey.M: // Return to menu
+                                        ShowMenu(); // Call the menu method
+                                        return; // Exit the current game loop and return to the menu
+                                    default:
+                                        Console.WriteLine("Invalid selection! Please try again.");
+                                        break;
+                                }
                             }
                         }
                     }
                 }
-                Thread.Sleep(TimeSpan.FromMilliseconds(20)); //ngắt 20ms giữa các loop
+                Thread.Sleep(TimeSpan.FromMilliseconds(15)); //ngắt 20ms giữa các loop
             }
             goto NextRound;
         }
