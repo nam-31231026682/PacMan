@@ -280,20 +280,35 @@ internal class Program
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
                         Console.Clear();
-                        Console.SetCursorPosition(10, 5);
+
+
+                        Console.SetCursorPosition(13, 2);
+                        Console.WriteLine("╔═════════════════════════════════════════════════════════╗");
+                        Console.SetCursorPosition(20, 3);
                         Console.WriteLine("1. De bat dau tro choi, nhan nut di chuyen trai hoac phai");
-                        Console.WriteLine("2. Nhiem vu cua ban la dieu khien PacMan an het cac hat diem (.) va hat nang luong (+) .Neu Ma bat duoc ban 1 lan, man choi se ket thuc");
-                        Console.WriteLine("3. Khi PacMan an duoc hat nang luong (+), Ma se bi te liet và PacMan co the cham vao chung va Ma se quay tro ve vi tri ban dau");
+                        Console.SetCursorPosition(20, 4);
+                        Console.WriteLine("2. Nhiem vu cua ban la dieu khien PacMan an het cac hat diem (.)");
+                        Console.SetCursorPosition(23, 5);
+                        Console.WriteLine("va hat nang luong (+). Neu Ma bat duoc ban 1 lan, man choi se ket thuc");
+                        Console.SetCursorPosition(20, 5);
+                        Console.WriteLine("3. Khi PacMan an duoc hat nang luong (+), Ma se bi te liet ");
+                        Console.SetCursorPosition(23, 6);
+                        Console.WriteLine("va PacMan co the cham vao chung. Ma se quay tro ve vi tri ban dau khi bi cham");
+                        Console.SetCursorPosition(20, 7);
                         Console.WriteLine("4. PacMan se thang khi an het cac hat tren ban do");
                         Console.SetCursorPosition(10, 15);
-                        Console.WriteLine("Nhan nut bat ki de quay lai Menu...");
+                        Console.WriteLine("Nhan nut bat ki de quay ve Menu...");
+
+
+
                         Console.ReadKey(true);
+
                         break;
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
                         Console.Clear();
                         ShowLeaderboard();
-                        Console.WriteLine("\nPress any key to return to the menu...");
+                        Console.WriteLine("\nNhan nut bat ki de quay ve Menu...");
                         Console.ReadKey(true); // Wait for user input
                         break;
 
@@ -302,7 +317,7 @@ internal class Program
                         // Quit game
                         Console.Clear();
                         Console.SetCursorPosition(10, 15);
-                        Console.WriteLine("Goodbye!");
+                        Console.WriteLine("Hen gap lai!");
                         Thread.Sleep(1000);
                         Environment.Exit(0);
                         break;
