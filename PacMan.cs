@@ -1,13 +1,13 @@
 ﻿using NAudio.Wave;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Towel;
 using static Towel.Statics;
-using System.Diagnostics;
-using System.IO;
 
 #region Ascii
 
@@ -28,7 +28,7 @@ using System.IO;
 // ╔═════╝ · ╨   ══════╦══════   ╨ · ╚═════╗
 // ║ · · · · · · · · · ║ · · · · · · · · · ║
 // ║ · ══╗ · ═══════ · ╨ · ═══════ · ╔══ · ║
-// ║ + · ║ · · · · · · █ · · · · · · ║ · + ║
+// ║ + · ║ · · · · · · █ · · · · · · ║ · + ║-
 // ╠══ · ╨ · ╥ · ══════╦══════ · ╥ · ╨ · ══╣
 // ║ · · · · ║ · · · · ║ · · · · ║ · · · · ║
 // ║ · ══════╩══════ · ╨ · ══════╩══════ · ║
@@ -278,20 +278,20 @@ internal class Program
                     case ConsoleKey.NumPad2:
                         Console.Clear();
 
-                        Console.SetCursorPosition(13, 2);
+                        Console.SetCursorPosition(13, 1);
                         Console.WriteLine("╔═════════════════════════════════════════════════════════╗");
                         Console.SetCursorPosition(20, 3);
-                        Console.WriteLine("1. De bat dau tro choi, nhan nut di chuyen trai hoac phai");
+                        Console.WriteLine("1. De bat dau tro choi, nhan nut di chuyen trai hoac phai.");
                         Console.SetCursorPosition(20, 4);
                         Console.WriteLine("2. Nhiem vu cua ban la dieu khien PacMan an het cac hat diem (.)");
                         Console.SetCursorPosition(23, 5);
-                        Console.WriteLine("va hat nang luong (+). Neu Ma bat duoc ban 1 lan, man choi se ket thuc");
-                        Console.SetCursorPosition(20, 5);
-                        Console.WriteLine("3. Khi PacMan an duoc hat nang luong (+), Ma se bi te liet ");
-                        Console.SetCursorPosition(23, 6);
-                        Console.WriteLine("va PacMan co the cham vao chung. Ma se quay tro ve vi tri ban dau khi bi cham");
-                        Console.SetCursorPosition(20, 7);
-                        Console.WriteLine("4. PacMan se thang khi an het cac hat tren ban do");
+                        Console.WriteLine("va hat nang luong (+). Neu Ma bat duoc ban 1 lan, man choi se ket thuc.");
+                        Console.SetCursorPosition(20, 6);
+                        Console.WriteLine("3. Khi PacMan an duoc hat nang luong (+), Ma se bi te liet va PacMan co the cham vao chung.");
+                        Console.SetCursorPosition(23, 7);
+                        Console.WriteLine("Ma se quay tro ve vi tri ban dau khi bi cham.");
+                        Console.SetCursorPosition(20, 8);
+                        Console.WriteLine("4. PacMan se thang khi an het cac hat tren ban do.");
                         Console.SetCursorPosition(10, 15);
                         Console.WriteLine("Nhan nut bat ki de quay ve Menu...");
 
@@ -409,7 +409,6 @@ internal class Program
                     outputDevice.Init(audioFile);
                     audioFile.Volume = 0.2f; // de nhac nen o muc 20%
                     outputDevice.Play();
-
                     // Loop the music
                     while (true)
                     {
@@ -449,7 +448,7 @@ internal class Program
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error playing eating sound: {ex.Message}");
+                    Console.WriteLine($"Loi khi bat am thanh an cham: {ex.Message}");
                 }
             });
         }
@@ -477,7 +476,7 @@ internal class Program
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error playing Pac-Man dead sound: {ex.Message}");
+                    Console.WriteLine($"Loi khi bat am thanh chet: {ex.Message}");
                 }
             });
         }
@@ -576,7 +575,7 @@ internal class Program
         (int X, int Y)[] Locations = GetLocations();
         Console.Clear(); //xóa màn hình Console
 
-        ShowLogo();
+        ShowLogo(); //
         Task.Run(() => BackgroundMusic("background.wav"));
         AskName();
         ShowMenu();
@@ -590,7 +589,7 @@ internal class Program
             Console.CursorVisible = false;
             Console.BackgroundColor = ConsoleColor.Black; //mau nen
             Console.ForegroundColor = ConsoleColor.Yellow; //mau chu
-            Score = 0;
+
         NextRound:
             Score = 0;
             Console.Clear();
