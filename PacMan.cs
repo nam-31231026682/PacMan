@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Towel;
+using Towel.DataStructures;
 using static Towel.Statics;
 
 #region Ascii
@@ -139,7 +140,6 @@ internal class Program
             Console.WriteLine("║              PAC-MAN !             ║");
             Console.SetCursorPosition(45, 7);
             Console.WriteLine("╚════════════════════════════════════╝");
-
             // Hien thi Pac-Man duoi dang ASCII
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -278,10 +278,12 @@ internal class Program
                     case ConsoleKey.NumPad2:
                         Console.Clear();
 
-                        Console.SetCursorPosition(13, 1);
-                        Console.WriteLine("╔═════════════════════════════════════════════════════════╗");
+                        Console.SetCursorPosition(15, 1);
+                        Console.WriteLine("╔═══════════════════════════════════════════════════════════════════════════════════════════════════╗");
+                        Console.SetCursorPosition(15, 2);
+                        Console.WriteLine("║                                                                                                   ║");
                         Console.SetCursorPosition(20, 3);
-                        Console.WriteLine("1. De bat dau tro choi, nhan nut di chuyen trai hoac phai.");
+                        Console.WriteLine("1. De bat dau tro choi, nhan nut di chuyen trai hoac phai.                                     ║");                                
                         Console.SetCursorPosition(20, 4);
                         Console.WriteLine("2. Nhiem vu cua ban la dieu khien PacMan an het cac hat diem (.)");
                         Console.SetCursorPosition(23, 5);
@@ -563,13 +565,13 @@ internal class Program
             }
         }
 
-        char[,] Dots; //2d array for dots
-        int Score; //store point
-        (int X, int Y) PacManPosition; //tuple of int X, Y
-        Direction? PacManMovingDirection = default;
-        int? PacManMovingFrame = default;
-        const int FramesToMoveHorizontal = 8;
-        const int FramesToMoveVertical = 10;
+        char[,] Dots; //Mang 2 chieu de luu vi tri cac diem tren ban do
+            int Score; //bien luu tru diem cua nguoi choi
+        (int X, int Y) PacManPosition; // Toa do hien tai cua PacMan
+        Direction? PacManMovingDirection = default; // Huong di chuyen hien tai cua PacMan 
+        int? PacManMovingFrame = default; // Khung hinh hien tai trong qua trinh di chuyen cua PacMan
+        const int FramesToMoveHorizontal = 8; // PacMan di chuyen theo chieu ngang 1 o mat 8 frame
+        const int FramesToMoveVertical = 10; // PacMan di chuyen theo chieu doc 1 o mat 10 frame 
         Ghost[] Ghosts; //tạo mảng
         const int GhostWeakTime = 150;
         (int X, int Y)[] Locations = GetLocations();
@@ -696,7 +698,8 @@ internal class Program
                         }
                     }
                 }
-                Thread.Sleep(TimeSpan.FromMilliseconds(15)); //ngắt 15ms giữa các loop
+                Thread.Sleep(TimeSpan.FromMilliseconds(15)); //ngat 15ms giua cac loop.
+                                                             //fps = 1000/15 = 66
             }
             goto NextRound;
         }
@@ -733,18 +736,18 @@ internal class Program
             bool moved = false;
             void TrySetPacManDirection(Direction direction)
             {
-                if (!moved && //PM chưa di chuyển
+                if (!moved && //dam bao PacMan chi di chuyen theo 1 huong moi frame
                     PacManMovingDirection != direction && //hướng mới phải # hướng đang di chuyển
                     CanMove(PacManPosition.X, PacManPosition.Y, direction)) //check đường đi có avai ko
                 {
                     PacManMovingDirection = direction; //update hướng di chuyển
-                    PacManMovingFrame = 0; //reset khung hình
+                    PacManMovingFrame = 0; //khi chuyen huong, animation cua PacMan reset
                     moved = true;
                 }
             }
-            while (Console.KeyAvailable) //check input
+            while (Console.KeyAvailable) //kiem tra tat ca input tu user
             {
-                switch (Console.ReadKey(true).Key) //read input và xử lí phím
+                switch (Console.ReadKey(true).Key) //xu li input tu nguoi choi
                 {
                     case ConsoleKey.UpArrow: TrySetPacManDirection(Direction.Up); break;
                     case ConsoleKey.DownArrow: TrySetPacManDirection(Direction.Down); break;
@@ -817,34 +820,35 @@ internal class Program
 
         void UpdatePacMan()
         {
-            if (PacManMovingDirection.HasValue)
+            if (PacManMovingDirection.HasValue) //kiem tra PacMan co dang di chuyen hay khong
             {
                 if ((PacManMovingDirection == Direction.Left || PacManMovingDirection == Direction.Right) && PacManMovingFrame >= FramesToMoveHorizontal ||
                     (PacManMovingDirection == Direction.Up || PacManMovingDirection == Direction.Down) && PacManMovingFrame >= FramesToMoveVertical)
                 {
                     PacManMovingFrame = 1; //tốc độ của PM
                     int x_adjust =
-                        PacManMovingDirection == Direction.Left ? -1 :
-                        PacManMovingDirection == Direction.Right ? 1 :
-                        0;
+                        PacManMovingDirection == Direction.Left ? -1 : //di chuyen sang trai thi toa do la: x - 1
+                        PacManMovingDirection == Direction.Right ? 1 : //di chuyen sang phai thi toa do la: x + 1
+                        0; // x = 0 khi y da co gia tri
                     int y_adjust =
-                        PacManMovingDirection == Direction.Up ? -1 :
-                        PacManMovingDirection == Direction.Down ? 1 :
-                        0;
+                        PacManMovingDirection == Direction.Up ? -1 : //di chuyen len tren thi toa do la: y - 1
+                        PacManMovingDirection == Direction.Down ? 1 : //di chuyen len tren thi toa do la: y + 1
+                        0; // y = 0 khi x da co gia tri
                     Console.SetCursorPosition(PacManPosition.X, PacManPosition.Y);
                     Console.Write(" ");
-                    PacManPosition = (PacManPosition.X + x_adjust, PacManPosition.Y + y_adjust);
-                    if (PacManPosition.X < 0)
+                    //toa do cua PacMan sau khi dieu chinh
+                    PacManPosition = (PacManPosition.X + x_adjust, PacManPosition.Y + y_adjust); 
+                    if (PacManPosition.X < 0) //neu di chuyen khoi cong ben trai, dich chuyen qua ben phai
                     {
                         PacManPosition.X = 40;
                     }
-                    else if (PacManPosition.X > 40)
+                    else if (PacManPosition.X > 40) //neu di chuyen khoi cong ben phai, dich chuyen qua ben trai
                     {
                         PacManPosition.X = 0;
                     }
-                    if (Dots[PacManPosition.X, PacManPosition.Y] is '·') //ăn . thì
+                    if (Dots[PacManPosition.X, PacManPosition.Y] is '·') //an . thi
                     {
-                        Dots[PacManPosition.X, PacManPosition.Y] = ' ';
+                        Dots[PacManPosition.X, PacManPosition.Y] = ' '; //xoa .
                         Score += 1;
                         EatingDotSound();
                     }
@@ -860,7 +864,7 @@ internal class Program
                     }
                     if (!CanMove(PacManPosition.X, PacManPosition.Y, PacManMovingDirection.Value))
                     {
-                        PacManMovingDirection = null;
+                        PacManMovingDirection = null; //neu huong dang di chuyen la tuong, dung PacMan lai
                     }
                 }
                 else
@@ -1020,52 +1024,60 @@ internal class Program
             }
             else
             {
-                Console.SetCursorPosition(ghost.Position.X, ghost.Position.Y);
+                Console.SetCursorPosition(ghost.Position.X, ghost.Position.Y);  // Xoa vi tri cua Ma 
                 Console.Write(' ');
-                ghost.Position = GetGhostNextMove(ghost.Position, ghost.Destination ?? PacManPosition);
-                ghost.UpdateFrame = 0;
+                // Tinh toan vi tri moi va di chuyen con ma
+                ghost.Position = GetGhostNextMove(ghost.Position, ghost.Destination ?? PacManPosition); 
+                ghost.UpdateFrame = 0; // Dat lai so khung hinh da xu ly
             }
         }
 
         (int X, int Y)[] GetLocations()
         {
+            // Tao danh sach cac vi tri tu chuoi GhostWallString
             List<(int X, int Y)> list = new();
             int x = 0;
             int y = 0;
             foreach (char c in GhostWallsString)
             {
-                if (c is '\n')
+                if (c is '\n') // Khi gap \n, chuyen sang hang tiep theo
                 {
                     x = 0;
                     y++;
                 }
                 else
                 {
-                    if (c is ' ')
+                    if (c is ' ') // Neu ky tu la khoang trang, them toa do vao danh sach
                     {
                         list.Add((x, y));
                     }
                     x++;
                 }
             }
-            return [.. list];
+            return [.. list]; // Tra ve danh sach cac toa do
         }
 
         (int X, int Y) GetRandomLocation() => Random.Shared.Choose(Locations);
+        // Chon vi tri ngau nhien tu danh sach cac toa do co the su dung duoc
 
         (int X, int Y) GetGhostNextMove((int X, int Y) position, (int X, int Y) destination)
         {
-            HashSet<(int X, int Y)> alreadyUsed = new();
+            HashSet<(int X, int Y)> alreadyUsed = new(); // Tap hop luu cac toa do da kiem tra
 
             char BoardAt(int x, int y) => GhostWallsString[y * 42 + x];
+            // Lay ky tu tai mot vi tri cu the tren bang 
 
             bool IsWall(int x, int y) => BoardAt(x, y) is not ' ';
+            // Kiem tra xem co phai tuong khong
+
 
             void Neighbors((int X, int Y) currentLocation, Action<(int X, int Y)> neighbors)
+            // Tim cac vi tri lang gieng cua vi tri hien tai 
             {
                 void HandleNeighbor(int x, int y)
                 {
                     if (!alreadyUsed.Contains((x, y)) && x >= 0 && x <= 40 && !IsWall(x, y))
+                    // Neu vi tri chua duoc kiem tra, khong nam ngoai bien va khong phai tuong, them vao danh sach 
                     {
                         alreadyUsed.Add((x, y));
                         neighbors((x, y));
@@ -1074,41 +1086,46 @@ internal class Program
 
                 int x = currentLocation.X;
                 int y = currentLocation.Y;
+                // Kiem tra cac lang gieng theo huong: trai, tren, phai, duoi 
                 HandleNeighbor(x - 1, y); // left
                 HandleNeighbor(x, y + 1); // up
                 HandleNeighbor(x + 1, y); // right
                 HandleNeighbor(x, y - 1); // down
             }
 
-            int Heuristic((int X, int Y) node)
+            int Heuristic((int X, int Y) node) //danh gia khoang cach tu vi tri hien tai toi PacMan 
+
             {
                 int x = node.X - PacManPosition.X;
                 int y = node.Y - PacManPosition.Y;
                 return x * x + y * y;
             }
 
+            // Tim duong di toi uu tu vi tri hien tai toi dich 
             Action<Action<(int X, int Y)>> path = SearchGraph(position, Neighbors, Heuristic, node => node == destination)!;
             (int X, int Y)[] array = path.ToArray();
-            return array[1];
+            return array[1];  // Tra ve buoc tiep theo trong duong di 
         }
     }
 }
 
+//Lop mo ta thong tin va trang thai cua Ma 
 internal class Ghost
 {
-    public (int X, int Y) StartPosition;
-    public (int X, int Y) Position;
-    public bool Weak;   //bool indicates when the ghost is in a weak state
-    public int WeakTime; //counting down the time ghost remain weak
-    public ConsoleColor Color;   //color of ghost
-    public Action? Update;  //updating the ghost state and location
-    public int UpdateFrame;
-    public int FramesToUpdate; //control the ghost's speed
-    public (int X, int Y)? Destination;
+    public (int X, int Y) StartPosition; // vi tri ban dau cua Ma 
+    public (int X, int Y) Position; // vi tri hien tai cua Ma 
+    public bool Weak;   //trang thai yeu cua Ma 
+    public int WeakTime; //thoi gian con lai khi Ma yeu 
+    public ConsoleColor Color;   // mau cua Ma 
+    public Action? Update;  //hanh dong cap nhat trang thai va vi tri cua Ma 
+    public int UpdateFrame; // so khung hinh da cap nhat 
+    public int FramesToUpdate; // so khung hinh can de Ma di chuyen 
+    public (int X, int Y)? Destination; // diem den cua Ma
+
 }
 
-internal enum Direction
-{ //determine how how PacMan update its position based on user's input
+internal enum Direction //Xac dinh huong di chuyen cua PacMan dua tren input cua nguoi choi 
+{ 
     Up = 0,
     Down = 1,
     Left = 2,
